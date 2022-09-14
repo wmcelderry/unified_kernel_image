@@ -25,7 +25,7 @@ function get_last_section_terminal_address()
     printf 0x%x "$(objdump -h "${file}"| tail -2 | head -1  | awk '{ a=sprintf("%d","0x"$3); b=sprintf("%d","0x"$4); print a+b; }')"
 }
 
-function appended_section_term_address()
+function get_section_term_address()
 {
     local base="${1}" #can be dec or hex (hex must be 0x prefixed)
     local size="${2}" #can be dec or hex (hex must be 0x prefixed)
@@ -45,11 +45,6 @@ function file_size_in_bytes()
 }
 
 
-function init_previous_address()
-{
-    previous_address="$1"
-}
-
 function mksections()
 {
     local file="$1"
@@ -61,10 +56,9 @@ function mksections()
     if [[ -f "${file}" ]] ; then
         echo '--add-section .'"${section_name}"'="'"${file}"'" --change-section-vma .'"${section_name}"'="'"${base}"\"
     fi
-    base="$(appended_section_term_address "${base}" "$(file_size_in_bytes "${file}" )")"
+    base="$(get_section_term_address "${base}" "$(file_size_in_bytes "${file}" )")"
 
     if [[ ${#*} -ge 2 ]] ; then
-        echo mksections "${1}" "${2}" "${base}" "${@:3}" 1>&2
         mksections "${1}" "${2}" "${base}" "${@:3}"
     fi
 }
