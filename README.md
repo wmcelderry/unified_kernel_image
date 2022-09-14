@@ -1,17 +1,20 @@
+# What's this all about #
 This project is the foundation for creating a Unified Kernel Image in Ubuntu.
 
-Why?
-This may be useful for various reasons, but one reason is to ensure that booting a modified modified initrd doesn't then unlock the LUKS container using a TPM key.
+## Why? ##
+This may be useful for various reasons, but one reason is to ensure that booting a modified initrd doesn't then unlock the LUKS container using a TPM key, which would expose your encrypted data to attackers without them even requiring a password.
 
-Expand on that please!
+## Expand on that please! ##
 In a normal boot process, the BIOS provides a minimal 'root of trust', it 'measures' the full BIOS, the BIOS measures the EFI boot process and the chain can continue up.
+
 In practice that may mean that the kernel is measured, but the initrd is not, which would mean that changing the initrd would not require authentication - or to say it the other way around, an attacker could change the initrd and then get access to the system without needing a password.
-A Unified Kernel Image prevents that: it combines the kernel image, initrd, command line and such into one file, and they are all measured together.  Any change ensures that the PCR value changes, and (if the TPM key was sealed against the specific value of a changed PCR) it will not unlock the key.
 
+## How does this protect the ? ##
+A Unified Kernel Image prevents that: it combines the kernel image, initrd, command line and such into one file, and they are all measured together.  Any change ensures that the PCR value changes, and (if the TPM key was sealed against the specific value of a changed PCR) the TPM cannot be used to unseal the key LUKS.
 
-Does that mean that the system is locked to a specific Kernel / initrd / commandline forever when using TPM to unlock a LUKS container!?
-Nope!  It does mean that the system will not automatically update (the system would continue to create download new kernels and create new initrd images and update the grub config, but your system doesn't use grub anymore!)
-
+## Questions ##
+### Does that mean that the system is locked to a specific Kernel / initrd / commandline forever when using TPM to unlock a LUKS container!? ###
+Nope!  It does mean that the system will not automatically update (the system would continue to download new kernels and create new initrd images and update the grub config, but your system doesn't use grub anymore, so it won't change what you are actually booting!)
 That's probably a good thing: you need to add a new key for the new kernel/initrd to automatically unlock - so you'll need to manually:
     1. create a new unified kernal image (UKI)
     2. add that to the UEFI bootloader menu
@@ -19,10 +22,15 @@ That's probably a good thing: you need to add a new key for the new kernel/initr
     4. systemd-cryptenroll again to allow the TPM to unlock automatically
 unlock when they change - someone will have to type a LUKS passphrase on the command line, then re-enroll the key sealed against the new PCRs
 
+### Does that mean you can get rid of grub?  remove the unencrypted /boot? ###
+Yes - in theory.  Let us know how you get on in practice!
+
+
+
 
 
 # How to use this repo #
-This repo is still under development - the commands are very simple and work, but the kernel version and paths are all hardcoded.
+This repo is still under development - the commands are very simple and work, but the kernel and paths are all hardcoded (to match the currently executing kernel version - though you can probably change it trivially).
 
 
 ```
