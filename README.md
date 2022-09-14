@@ -9,7 +9,7 @@ In a normal boot process, the BIOS provides a minimal 'root of trust', it 'measu
 
 In practice that may mean that the kernel is measured, but the initrd is not, which would mean that changing the initrd would not require authentication - or to say it the other way around, an attacker could change the initrd and then get access to the system without needing a password.
 
-## How does this protect the ? ##
+## How does this protect the system? ##
 A Unified Kernel Image prevents that: it combines the kernel image, initrd, command line and such into one file, and they are all measured together.  Any change ensures that the PCR value changes, and (if the TPM key was sealed against the specific value of a changed PCR) the TPM cannot be used to unseal the key LUKS.
 
 ## Questions ##
