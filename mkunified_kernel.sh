@@ -47,9 +47,9 @@ function file_size_in_bytes()
 
 function mksections()
 {
-    local file="$1"
-    local section_name="$2"
-    local base="${3}"
+    local base="$1"
+    local file="$2"
+    local section_name="$3"
 
     shift 3
 
@@ -59,7 +59,7 @@ function mksections()
     base="$(get_section_term_address "${base}" "$(file_size_in_bytes "${file}" )")"
 
     if [[ ${#*} -ge 2 ]] ; then
-        mksections "${1}" "${2}" "${base}" "${@:3}"
+        mksections "${base}" "${@}"
     fi
 }
 
@@ -85,7 +85,8 @@ function build_unified_kernel_image()
     stub_term_address="$(get_last_section_terminal_address "${systemd_stub_file}")"
     
     sections="$(mksections \
-            "${cmdline_file}" "cmdline" ${stub_term_address} \
+            "${stub_term_address}"   \
+            "${cmdline_file}" "cmdline" \
             "${osrel_file}" "osrel" \
             "${splash_file}" "splash" \
             "${kernel_file}" "kernel" \
