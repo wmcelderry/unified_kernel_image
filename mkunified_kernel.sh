@@ -86,10 +86,10 @@ function build_unified_kernel_image()
     
     sections="$(mksections \
             "${stub_term_address}"   \
-            "${cmdline_file}" "cmdline" \
             "${osrel_file}" "osrel" \
+            "${cmdline_file}" "cmdline" \
             "${splash_file}" "splash" \
-            "${kernel_file}" "kernel" \
+            "${kernel_file}" "linux" \
             "${initrd_file}" "initrd")"
 
     echo "${sections}"
